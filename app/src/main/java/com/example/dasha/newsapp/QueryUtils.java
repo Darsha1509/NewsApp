@@ -109,13 +109,16 @@ public class QueryUtils {
                 JSONObject currentResult = newsArray.getJSONObject(i);
                 String title = currentResult.getString("webTitle");
                 String section = currentResult.getString("sectionName");
+                String url = currentResult.getString("webUrl");
 
                 News oneNews = null;
                 if(currentResult.has("webPublicationDate")){
                     String date = currentResult.getString("webPublicationDate");
                     oneNews = new News(title, section, date);
+                    oneNews.setUrl(url);
                 }else{
                     oneNews = new News(title, section);
+                    oneNews.setUrl(url);
                 }
                 news.add(oneNews);
             }

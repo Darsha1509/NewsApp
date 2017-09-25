@@ -8,6 +8,7 @@ public class News {
     private String mInfo;
     private String mSection;
     private String mDate;
+    private String mUrl;
 
     public News(String info, String section) {
         mInfo = info;
@@ -30,5 +31,13 @@ public class News {
 
     public String getDate() {
         return mDate;
+    }
+
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public void setUrl(String url) {
+        mUrl = url;
     }
 }

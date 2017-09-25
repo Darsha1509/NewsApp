@@ -1,10 +1,12 @@
 package com.example.dasha.newsapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -42,13 +45,25 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
         listView.setAdapter(mAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                News currentNews = mAdapter.getItem(position);
+                String url = currentNews.getUrl();
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+        });
+
         loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
-
-
+        loadingSpinner.setVisibility(View.GONE);
     }
 
     @Override
     public Loader<ArrayList<News>> onCreateLoader(int id, Bundle args) {
+        loadingSpinner.setVisibility(View.VISIBLE);
         Log.e(LOG_TAG, "onCreateLoader");
 
         return new NewsLoader(NewsActivity.this);
@@ -79,6 +94,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
         @Override
         protected void onStartLoading(){
+
             Log.e(LOG_TAG, "onStartLoading");
         }
 
