@@ -1,6 +1,7 @@
 package com.example.dasha.newsapp;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -11,21 +12,24 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
 
 public class NewsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<News>>{
 
-    private static final String THEGUARDIAN_REQUEST_URL =
-            "http://content.guardianapis.com/search?q=immigration&api-key=test";
+    private static String THEGUARDIAN_REQUEST_URL = "";/* =
+            "http://content.guardianapis.com/search?q=immigration&api-key=test";*/
 
     private static final String LOG_TAG = NewsActivity.class.getSimpleName();
 
     private static final int NEWS_LOADER_ID = 1;
 
     NewsAdapter mAdapter;
+    ProgressBar loadingSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +41,9 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         mAdapter = new NewsAdapter(this, new ArrayList<News>());
 
         listView.setAdapter(mAdapter);
-        getSupportLoaderManager().initLoader(NEWS_LOADER_ID,null,NewsActivity.this).forceLoad();
-        Log.e(LOG_TAG, "initLoader");
+
+        loadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
+
 
     }
 
@@ -52,7 +57,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<ArrayList<News>> loader, ArrayList<News> data) {
         mAdapter.clear();
-
+        loadingSpinner.setVisibility(View.GONE);
         if(data != null && !data.isEmpty()){
             mAdapter.addAll(data);
         }
@@ -84,7 +89,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu){
         //Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_book_list, menu);
@@ -94,8 +99,18 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //Fetch the data remotely
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme("http")
+                        .authority("content.guardianapis.com")
+                        .appendPath("search")
+                        .appendQueryParameter("q", query)
+                        .appendQueryParameter("api-key", "test");
+
+                THEGUARDIAN_REQUEST_URL = builder.build().toString();
+
                 getSupportLoaderManager().initLoader(NEWS_LOADER_ID,null,NewsActivity.this).forceLoad();
                 Log.e(LOG_TAG, "initLoader");
+
 
                 searchView.clearFocus();
                 searchView.setQuery("", false);
@@ -109,9 +124,13 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
+
+
+
                 return false;
             }
         });
         return true;
-    }*/
+    }
 }
